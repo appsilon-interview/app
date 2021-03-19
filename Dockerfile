@@ -11,7 +11,7 @@ RUN R -e "install.packages(c('devtools', 'packrat'))"
 RUN R -e 'source("/app/install_deps.R", echo = TRUE)'
 
 # expose port
-EXPOSE 3838
+EXPOSE 443
 
 # run app on container start
-CMD ["R", "-e", "shiny::runApp('/app', host = '0.0.0.0', port = 3838)"]
+CMD ["R", "-e", "shiny::runApp('/app', host = '0.0.0.0', port = 443)"]
