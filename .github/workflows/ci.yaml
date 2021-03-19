@@ -23,6 +23,8 @@ jobs:
       image: shmileee/pre-commit:latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'recursive'
       - name: Run tests
         run: |
           make test
