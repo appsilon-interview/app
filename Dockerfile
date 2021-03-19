@@ -1,4 +1,3 @@
-# Base image https://hub.docker.com/u/rocker/
 FROM rocker/shiny:4.0.4
 
 # copy necessary files
