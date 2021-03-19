@@ -1,0 +1,61 @@
+---
+# yamllint disable rule:line-length
+
+name: CI/CD
+
+# yamllint disable-line rule:truthy
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+
+env:
+  PYTHONUNBUFFERED: "1"
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    container:
+      image: shmileee/pre-commit:latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Run tests
+        run: |
+          make test
+
+  build-images:
+    name: Build images
+    runs-on: ubuntu-latest
+    needs: test
+    outputs:
+      IMAGE_TAG: ${{ steps.tag.outputs.IMAGE_TAG }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Check if image needs to be built
+        uses: technote-space/get-diff-action@v3
+        with:
+          PREFIX_FILTER: |
+            src
+            Dockerfile
+
+      - name: Set image tag to latest if nothing changed
+        id: tag
+        if: ${{ !env.GIT_DIFF }}
+        run: |
+          echo "::set-output name=IMAGE_TAG::latest"
+
+      - name: Build images and publish
+        if: env.GIT_DIFF
+        env:
+          DOCKER_REPOSITORY: docker.io/shmileee
+          DOCKER_USERNAME: shmileee
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "$DOCKER_USERNAME" --password-stdin
+          export IMAGE_TAG=$(git rev-parse HEAD | head -c 7)
+          make build && make publish
