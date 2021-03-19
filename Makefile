@@ -22,7 +22,7 @@ build:
 	docker build -f Dockerfile --no-cache=$(DOCKER_NO_CACHE) \
 	-t $(IMAGE_NAME):$(IMAGE_TAG) .
 
-clean: test-clean
+clean:
 	-docker rmi $(IMAGE_NAME):$(IMAGE_TAG)
 
 publish:
