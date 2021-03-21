@@ -6,7 +6,7 @@ COPY /src ./app
 ## dependencies script
 COPY /install_deps.R ./app/install_deps.R
 
-RUN R -e "install.packages(c('devtools', 'packrat'))"
+RUN R -e "install.packages(c('devtools', 'packrat', 'RPostgres'))"
 RUN R -e 'source("/app/install_deps.R", echo = TRUE)'
 
 # expose port
